@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/normalize.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+    <title>Cinema Seats</title>
+</head>
+<body>    
+    <div class="header">
+      <a href="#default" class="logo">CinemaSeats</a>
+      <div class="header-right">
+        <a class="active" href="/">Home</a>
+        <a href="/admin">Admin</a>
+      </div>
+    </div>
+    <div class="container">        
+      {% if message != '' %}
+        <div class="alert {{ i_class }}">
+            {{ message }}
+        </div>
+      {% endif %}
+      {% if seats_data.count > 0 %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <label for="booked_by">Name</label>
+                <input type='text' name="booked_by" value="" required>
+            </div>
+            <div class="grid">
+              {% regroup seats_data by row_no as seats_list %}                
+              {% for seats in seats_list %}
+                <div class="row">
+                  <div class="row-label">{{ seats.grouper }}</div>
+                  {% for seat in seats.list %}
+                        {% if seat.booked_by != '' %}
+                        <div class="seat">  
+                          <input type="radio" value="{{ seat.seat_name }}" id="{{ seat.seat_no }}" name="seat_name"  disabled="true"/>
+                          <label for="{{ seat.seat_no }}"></label>
+                        </div>
+                        {% else %}
+                        <div class="seat">  
+                            <input type="radio" value="{{ seat.seat_name }}" id="{{ seat.seat_no }}" name="seat_name"/>
+                            <label for="{{ seat.seat_no }}"></label>
+                          </div>
+                        {% endif %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+            <input type="submit" class="submit" value="Book" />
+        </form>
+      {% else %}
+        <h3>Nothing to book right now come back later or go to admin and add new seats!</h3>
+      {% endif %}
+    </div>
+</body>
+</html>
